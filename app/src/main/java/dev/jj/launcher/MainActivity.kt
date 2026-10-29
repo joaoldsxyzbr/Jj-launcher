@@ -2,6 +2,7 @@ package dev.jj.launcher
 
 import android.app.role.RoleManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -31,6 +32,15 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 onRequestDefault = ::requestDefaultLauncher,
+                onOpenReleases = {
+                    runCatching {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/joaoldsxyzbr/Jj-launcher/releases"))
+                        )
+                    }.onFailure {
+                        Toast.makeText(this, "Não foi possível abrir as atualizações", Toast.LENGTH_SHORT).show()
+                    }
+                },
             )
         }
     }

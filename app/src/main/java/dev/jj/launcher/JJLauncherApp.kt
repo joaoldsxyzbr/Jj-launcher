@@ -82,6 +82,7 @@ fun JJLauncherApp(
     repository: AppRepository,
     onOpenApp: (InstalledApp) -> Unit,
     onRequestDefault: () -> Unit,
+    onOpenReleases: () -> Unit,
 ) {
     val context = LocalContext.current
     val dark = androidx.compose.foundation.isSystemInDarkTheme()
@@ -166,6 +167,7 @@ fun JJLauncherApp(
                     onToggleFavorite = toggleFavorite,
                     onClose = { drawerOpen = false; query = "" },
                     onRequestDefault = onRequestDefault,
+                    onOpenReleases = onOpenReleases,
                     onRefresh = { refreshToken += 1 },
                     error = loadError,
                 )
@@ -304,14 +306,22 @@ private fun AppDrawer(
                 shape = RoundedCornerShape(22.dp),
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
             )
+            Text(
+                "Segure um aplicativo para adicionar ou remover do dock",
+                modifier = Modifier.padding(top = 10.dp),
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Segure para adicionar ou remover do dock", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                TextButton(onClick = onRequestDefault, contentPadding = PaddingValues(horizontal = 4.dp)) {
+                TextButton(onClick = onRequestDefault) {
                     Text("Padrão", fontSize = 12.sp)
+                }
+                TextButton(onClick = onOpenReleases) {
+                    Text("Atualizações", fontSize = 12.sp)
                 }
             }
             when {
