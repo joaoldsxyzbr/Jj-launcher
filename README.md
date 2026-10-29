@@ -28,7 +28,7 @@ O CI também gera um APK de debug para cada Pull Request, quando os testes passa
 
 ## Tecnologias
 
-Kotlin 2.3.21, Jetpack Compose (BOM 2026.09.00), Android Gradle Plugin 8.13.2; minSdk 26 e compileSdk 36.
+Kotlin 2.3.21, Jetpack Compose (BOM 2026.05.01), Android Gradle Plugin 8.13.2; minSdk 26 e compileSdk 36.
 
 ## Privacidade
 
