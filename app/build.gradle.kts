@@ -6,7 +6,7 @@ plugins {
 
 val requestedReleaseVersion = providers.environmentVariable("JJ_RELEASE_VERSION").orNull
 val releaseCode = requestedReleaseVersion?.let { version ->
-    val match = Regex("""^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$""").matchEntire(version)
+    val match = Regex("""^(\d{1,3})\.(\d{1,3})\.(\d{1,3})$""").matchEntire(version)
         ?: error("JJ_RELEASE_VERSION deve ser MAJOR.MINOR.PATCH, ex.: 0.2.0")
     val (major, minor, patch) = match.destructured
     val numericCode = major.toInt() * 1_000_000 + minor.toInt() * 1_000 + patch.toInt() + 1
