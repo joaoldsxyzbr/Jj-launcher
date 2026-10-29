@@ -32,6 +32,24 @@ jobs:
           gradle-version: '8.13'
       - name: Test and build
         run: gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
+      - name: Verify release signing with disposable CI key
+        shell: bash
+        run: |
+          TEMP_KEY="$RUNNER_TEMP/jj-ci-release.p12"
+          trap 'rm -f "$TEMP_KEY"' EXIT
+          keytool -genkeypair -noprompt \
+            -storetype PKCS12 -keystore "$TEMP_KEY" \
+            -alias jj-ci -storepass temporary-ci-only -keypass temporary-ci-only \
+            -keyalg RSA -keysize 2048 -validity 1 -dname "CN=JJ CI"
+          JJ_KEYSTORE_PATH="$TEMP_KEY" \
+          JJ_STORE_PASSWORD=temporary-ci-only \
+          JJ_KEY_ALIAS=jj-ci \
+          JJ_KEY_PASSWORD=temporary-ci-only \
+          JJ_RELEASE_VERSION=0.1.0 \
+            gradle --no-daemon :app:assembleRelease
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify \
+            app/build/outputs/apk/release/app-release.apk
+          # Disposable CI keys and APKs must never be distributed.
       - uses: actions/upload-artifact@v4
         if: success()
         with:
