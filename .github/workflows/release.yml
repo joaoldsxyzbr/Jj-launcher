@@ -88,8 +88,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          DIST_APK="$RUNNER_TEMP/jj-launcher-v${JJ_RELEASE_VERSION}.apk"
+          cp app/build/outputs/apk/release/app-release.apk "$DIST_APK"
           gh release create "v$JJ_RELEASE_VERSION" \
-            "app/build/outputs/apk/release/app-release.apk#jj-launcher-v${JJ_RELEASE_VERSION}.apk" \
+            "$DIST_APK" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "JJ Launcher v$JJ_RELEASE_VERSION" \
