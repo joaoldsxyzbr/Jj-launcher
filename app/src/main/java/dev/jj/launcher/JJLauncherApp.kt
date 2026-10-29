@@ -278,6 +278,7 @@ private fun AppDrawer(
     onToggleFavorite: (InstalledApp) -> Unit,
     onClose: () -> Unit,
     onRequestDefault: () -> Unit,
+    onOpenReleases: () -> Unit,
     onRefresh: () -> Unit,
     error: Boolean,
 ) {
