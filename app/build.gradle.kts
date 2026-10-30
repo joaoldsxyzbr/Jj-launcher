@@ -29,8 +29,8 @@ android {
         applicationId = "dev.jj.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = releaseCode ?: 1
-        versionName = requestedReleaseVersion ?: "0.1.0"
+        versionCode = releaseCode ?: 2
+        versionName = requestedReleaseVersion ?: "0.2.0-dev"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

@@ -2,6 +2,7 @@ package dev.jj.launcher
 
 import android.app.role.RoleManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -32,11 +33,13 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 onRequestDefault = ::requestDefaultLauncher,
+                isDefaultLauncher = ::isDefaultLauncher,
                 onOpenReleases = {
                     runCatching {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/joaoldsxyzbr/Jj-launcher/releases"))
-                        )
+                        startActivity(Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://github.com/joaoldsxyzbr/Jj-launcher/releases")
+                        ))
                     }.onFailure {
                         Toast.makeText(this, "Não foi possível abrir as atualizações", Toast.LENGTH_SHORT).show()
                     }
@@ -45,11 +48,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun isDefaultLauncher(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val manager = getSystemService(RoleManager::class.java)
+            if (manager.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                return manager.isRoleHeld(RoleManager.ROLE_HOME)
+            }
+        }
+        val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+        return packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            ?.activityInfo?.packageName == packageName
+    }
+
     private fun requestDefaultLauncher() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val roles = getSystemService(RoleManager::class.java)
-            if (roles.isRoleAvailable(RoleManager.ROLE_HOME) && !roles.isRoleHeld(RoleManager.ROLE_HOME)) {
-                startActivity(roles.createRequestRoleIntent(RoleManager.ROLE_HOME))
+            val manager = getSystemService(RoleManager::class.java)
+            if (manager.isRoleAvailable(RoleManager.ROLE_HOME) &&
+                !manager.isRoleHeld(RoleManager.ROLE_HOME)) {
+                startActivity(manager.createRequestRoleIntent(RoleManager.ROLE_HOME))
                 return
             }
         }
