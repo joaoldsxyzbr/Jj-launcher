@@ -2,22 +2,23 @@
 
 Um launcher Android independente, minimalista e open source, desenvolvido do zero.
 
-## Primeira versão (MVP)
+## Versão 0.2.0-dev — evolução do MVP
 
-- Tela inicial com relógio, data e papel de parede do celular.
+- Tela inicial com relógio, data, papel de parede do celular e orientação para definir como launcher padrão.
 - Dock local com até cinco aplicativos favoritos (segure um app para adicionar/remover).
-- Gaveta com apps instalados, busca que ignora acentos e maiúsculas.
-- Abertura de aplicativos, gesto de deslizar para cima e suporte ao botão Voltar.
-- Solicitação da função de launcher padrão pelo botão **Padrão** na gaveta.
-- Atalho **Atualizações** na gaveta para consultar as versões oficiais no GitHub.
-- Temas dinâmicos no Android 12+ na gaveta; contraste fixo na tela inicial.
+- Gaveta com apps instalados, busca que ignora acentos e maiúsculas e UI minimalista de cores neutras.
+- Abertura de aplicativos, gesto de deslizar para cima acompanhando o dedo e suporte ao botão Voltar.
+- Cache de ícones pré-processados fora da thread de UI; atualização do catálogo ao instalar/remover apps.
+- Solicitação da função de launcher padrão pelo cartão **Ativar** na tela inicial ou em **Opções** na gaveta.
+- Atalho **Atualizações** dentro de **Opções** para consultar as versões oficiais no GitHub.
+- Paleta escura neutra com tipografia sem serifa e contraste fixo; ajustes adicionais de temas estão planejados.
 
 ## Abrir e executar
 
 1. Abra o projeto no Android Studio com JDK 17.
 2. Sincronize o Gradle e instale o Android SDK 36.
 3. Execute o módulo `app` em um dispositivo ou emulador Android 8.0+.
-4. Na gaveta, toque em **Padrão** para escolher o JJ Launcher como tela inicial.
+4. Na tela inicial, toque em **Ativar** para escolher o JJ Launcher como launcher padrão; ou use **Opções → Definir como tela inicial**.
 
 Para compilar pela linha de comando com Gradle 8.13 instalado:
 
@@ -25,7 +26,7 @@ Para compilar pela linha de comando com Gradle 8.13 instalado:
 gradle :app:testDebugUnitTest :app:assembleDebug
 ```
 
-O CI também gera um APK de debug para cada Pull Request, quando os testes passam.
+O CI também gera um APK de debug para cada Pull Request, quando os testes passam. Consulte [o plano de teste da v0.2](docs/v0.2-test-plan.md).
 
 ## Tecnologias
 
@@ -62,6 +63,7 @@ O aplicativo não solicita permissão de internet e não inclui SDKs de anúncio
 - Não implementa integração com a tela de recentes ou animações proprietárias de navegação do fabricante.
 - É necessário verificar aparência, contraste, desempenho e comportamento de gestos em dispositivos reais.
 - O ID de aplicação `dev.jj.launcher` e a marca JJ Launcher são provisórios.
+- A fluidez deve ser medida em dispositivo real: o cache e as mudanças de interface ainda não comprovam um desempenho específico.
 
 ## Desenvolvimento
 
