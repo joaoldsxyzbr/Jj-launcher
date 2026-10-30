@@ -411,7 +411,27 @@ private fun AppDrawer(
                 .navigationBarsPadding()
                 .padding(horizontal = 20.dp),
         ) {
-            Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.Center) {
+            var downDistance by remember { mutableFloatStateOf(0f) }
+            Box(
+                Modifier.fillMaxWidth()
+                    .height(34.dp)
+                    .semantics { contentDescription = "Arraste para baixo para fechar aplicativos" }
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onDragStart = { downDistance = 0f },
+                            onVerticalDrag = { change, delta ->
+                                downDistance += delta
+                                change.consume()
+                            },
+                            onDragEnd = {
+                                if (downDistance > 55f) onClose()
+                                downDistance = 0f
+                            },
+                            onDragCancel = { downDistance = 0f },
+                        )
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
                 Box(
                     Modifier.size(width = 34.dp, height = 4.dp)
                         .clip(RoundedCornerShape(3.dp))
@@ -428,9 +448,6 @@ private fun AppDrawer(
                 )
                 TextButton(onClick = onSettings) {
                     StyledText("Opções", 13.sp, Muted, FontWeight.Medium)
-                }
-                TextButton(onClick = onClose) {
-                    StyledText("Fechar", 13.sp, Muted)
                 }
             }
             OutlinedTextField(
