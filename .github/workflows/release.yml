@@ -90,12 +90,16 @@ jobs:
         run: |
           DIST_APK="$RUNNER_TEMP/jj-launcher-v${JJ_RELEASE_VERSION}.apk"
           cp app/build/outputs/apk/release/app-release.apk "$DIST_APK"
+          NOTES_ARGS=(--generate-notes)
+          if [[ -f "docs/releases/v${JJ_RELEASE_VERSION}.md" ]]; then
+            NOTES_ARGS=(--notes-file "docs/releases/v${JJ_RELEASE_VERSION}.md")
+          fi
           gh release create "v$JJ_RELEASE_VERSION" \
             "$DIST_APK" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "JJ Launcher v$JJ_RELEASE_VERSION" \
-            --generate-notes
+            "${NOTES_ARGS[@]}"
       - name: Remove private signing material
         if: always()
         run: rm -f "$RUNNER_TEMP/jj-release.jks"
