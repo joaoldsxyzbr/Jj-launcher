@@ -1,0 +1,58 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Unit tests and debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android SDK
+        run: |
+          SDK_ROOT="/usr/local/lib/android/sdk"
+          SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -type f -name sdkmanager | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install "platforms;android-36" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Test and build
+        run: gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
+      - name: Verify release signing with disposable CI key
+        shell: bash
+        run: |
+          TEMP_KEY="$RUNNER_TEMP/jj-ci-release.p12"
+          trap 'rm -f "$TEMP_KEY"' EXIT
+          keytool -genkeypair -noprompt \
+            -storetype PKCS12 -keystore "$TEMP_KEY" \
+            -alias jj-ci -storepass temporary-ci-only -keypass temporary-ci-only \
+            -keyalg RSA -keysize 2048 -validity 1 -dname "CN=JJ CI"
+          JJ_KEYSTORE_PATH="$TEMP_KEY" \
+          JJ_STORE_PASSWORD=temporary-ci-only \
+          JJ_KEY_ALIAS=jj-ci \
+          JJ_KEY_PASSWORD=temporary-ci-only \
+          JJ_RELEASE_VERSION=0.1.0 \
+            gradle --no-daemon :app:assembleRelease
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify \
+            app/build/outputs/apk/release/app-release.apk
+          # Disposable CI keys and APKs must never be distributed.
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: jj-launcher-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
